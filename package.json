@@ -4,8 +4,15 @@
   "description": "* Can make a named playlist",
   "main": "server.js",
   "dependencies": {
+    "bcrypt": "^3.0.4",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
-    "mongoose": "^5.4.19"
+    "express-session": "^1.15.6",
+    "mongoose": "^5.4.19",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "passport-spotify": "^1.0.1",
+    "session": "^0.1.0"
   },
   "devDependencies": {},
   "scripts": {
