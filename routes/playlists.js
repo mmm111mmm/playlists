@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { Playlist } = require('./models.js')
+const { Playlist } = require('./../models.js')
 const router = express.Router();
 
 // Get all the playlists in the database

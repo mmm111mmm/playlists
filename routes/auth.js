@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const { User } = require('./models.js')
+const { User } = require('./../models.js')
 
 router.post("/auth/signup", function(request, response, next) {
     const salt = bcrypt.genSaltSync(10);
