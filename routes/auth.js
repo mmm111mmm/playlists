@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const { User } = require('./../models.js')
+// middleware to check the user is logged
+const { isLoggedIn } = require('./../utils.js')
 
 router.post("/auth/signup", function(request, response, next) {
     const salt = bcrypt.genSaltSync(10);
@@ -27,7 +29,7 @@ router.post("/auth/login", function(request, response, next) {
       } else {  
         if(bcrypt.compareSync(request.body.password, user.password)) {
           request.session.user = user
-          response.status(200).send()
+          response.status(200).send(user)
         } else {
           response.status(403).send()
         }
@@ -39,11 +41,15 @@ router.post("/auth/login", function(request, response, next) {
     })
 });
 
-router.get('/auth/logout', function(request, response, next) { 
+router.post('/auth/logout', function(request, response, next) { 
   request.session.destroy(function(error) {
     if(error) console.log("Couldn't destroy the sesson")
   })
   response.status(200).send()
+});
+
+router.get('/auth/profile', isLoggedIn, function(req, res, next) { 
+  res.status(200).send(req.session.user)
 });
 
 module.exports = router;

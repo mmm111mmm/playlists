@@ -1,89 +1,104 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { Playlist } = require('./../models.js')
 const router = express.Router();
+// we'll be adding to this model
+const { Playlist } = require('./../models.js')
+// middleware to check the user is logged
+const { isLoggedIn } = require('./../utils.js')
 
 // Get all the playlists in the database
-router.get('/playlist/', function(request, response, next) {
+router.get('/playlist/', function(req, res, next) {
   
   Playlist.find()
   .populate("_owner")
   .then(function(playlists) {
-      response.status(200).send(playlists)
+    res.status(200).send(playlists)
   })
   .catch(function(error) {
-      response.status(500).send(error)
+    res.status(500).send(error)
   }); 
   
 })
 
 // Get only the current user's playlists 
-router.get('/playlist/my', function(request, response, next) {
-  Playlist.find({"_owner": mongoose.Types.ObjectId(request.session.user._id)})
+router.get('/playlist/my', isLoggedIn, function(req, res, next) {
+
+  Playlist.find(
+    {"_owner": mongoose.Types.ObjectId(req.session.user._id)})
   .populate("_owner")
   .then(function(playlists) {
-      response.status(200).send(playlists)
+    res.status(200).send(playlists)
   })
   .catch(function(error) {
-      response.status(500).send(error)
+    res.status(500).send(error)
   }); 
   
 })
 
 // Add a playlist - give it a name only
-router.post('/playlist/:name', function(request, response, next) {
+router.post('/playlist/:name', isLoggedIn, function(req, res, next) {
 
   Playlist.create({ 
-    name: request.params.name, 
-    _owner: request.session.user._id })
+    name: req.params.name, 
+    _owner: req.session.user._id })
   .then(function() {
-    response.status(200).send()
+    res.status(200).send()
   })
   .catch(function(error) {
-    response.status(500).send()
+    res.status(500).send()
   }); 
     
 })
 
 // Delete the playlist
-router.delete('/playlist/:id', function(request, response, next) {
+router.delete('/playlist/:id', isLoggedIn, function(req, res, next) {
   
-  Playlist.findByIdAndDelete(request.params.id)
-  .then(function() {
-    response.status(200).send()
+  Playlist.findOneAndDelete({
+    "_id": mongoose.Types.ObjectId(req.params.id),
+    "_owner": mongoose.Types.ObjectId(req.session.user._id)
+  })
+  .then(function(foundOne) {
+    if(!foundOne) res.status(404).send()
+    else res.status(200).send()
   })
   .catch(function(error) {
-    response.status(500).send(error)
+    res.status(500).send(error)
   }); 
     
 })
   
 // Add a track (link) to playlist
-router.post('/playlist/link/:id', function(request, response, next) {
+router.post('/playlist/link/:id', isLoggedIn, function(req, res, next) {
   
-  Playlist.findByIdAndUpdate(
-    request.params.id, 
-    { $push: { links: request.body.link } })
-  .then(function() {
-    response.status(200).send()
+  Playlist.findOneAndUpdate({
+      "_id": mongoose.Types.ObjectId(req.params.id),
+      "_owner": mongoose.Types.ObjectId(req.session.user._id)
+    },
+    { $push: { links: req.body.link } })
+  .then(function(foundOne) {
+    if(!foundOne) res.status(404).send()
+    else res.status(200).send()    
   })
   .catch(function(error) {
-    response.status(500).send(error)
+    res.status(500).send(error)
   }); 
     
 })
   
 // Delete a track (link) from a playlist
-router.delete('/playlist/link/:id', function(request, response, next) {
+router.delete('/playlist/link/:id', isLoggedIn, function(req, res, next) {
   
-  Playlist.findByIdAndUpdate(
-    request.params.id, 
-    { $pull: { links: request.body.link } })
-  .then(function() {
-    response.status(200).send()
+  Playlist.findOneAndUpdate({
+      "_id": mongoose.Types.ObjectId(req.params.id),
+      "_owner": mongoose.Types.ObjectId(req.session.user._id)
+    },
+    { $pull: { links: req.body.link } })
+  .then(function(foundOne) {
+    if(!foundOne) res.status(404).send()
+    else res.status(200).send() 
   })
   .catch(function(error) {
-    response.status(500).send(error)
+    res.status(500).send(error)
   }); 
   
 })

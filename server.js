@@ -8,10 +8,10 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 
 // TODO: 
-// middleware for ensure we're logged in
-// can't delete, edit lists, add lists to other users's playlists
 // limit all playlists
 // limit my playlists
+// reorder lists
+// add a comment on the link
 // -- later
 // 400 errors
 // next error
