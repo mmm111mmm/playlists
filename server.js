@@ -34,7 +34,7 @@ app.use(session({
   saveUninitialized: false,
   resave: true,
   store: new mongoStore({ mongooseConnection: mongoose.connection })  
- }));
+}));
 
 // Initialise the playlists and auth routes
 app.use('/', require('./routes/playlists.js'))

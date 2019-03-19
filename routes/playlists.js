@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Playlist } = require('./models.js')
 const router = express.Router();
 
+// Get all the playlists in the database
 router.get('/playlist/', function(request, response, next) {
   
   Playlist.find()
@@ -16,6 +17,7 @@ router.get('/playlist/', function(request, response, next) {
   
 })
 
+// Get only the current user's playlists 
 router.get('/playlist/my', function(request, response, next) {
   Playlist.find({"_owner": mongoose.Types.ObjectId(request.session.user._id)})
   .populate("_owner")
@@ -28,6 +30,7 @@ router.get('/playlist/my', function(request, response, next) {
   
 })
 
+// Add a playlist - give it a name only
 router.post('/playlist/:name', function(request, response, next) {
 
   Playlist.create({ 
@@ -41,7 +44,8 @@ router.post('/playlist/:name', function(request, response, next) {
   }); 
     
 })
-  
+
+// Delete the playlist
 router.delete('/playlist/:id', function(request, response, next) {
   
   Playlist.findByIdAndDelete(request.params.id)
@@ -54,6 +58,7 @@ router.delete('/playlist/:id', function(request, response, next) {
     
 })
   
+// Add a track (link) to playlist
 router.post('/playlist/link/:id', function(request, response, next) {
   
   Playlist.findByIdAndUpdate(
@@ -68,6 +73,7 @@ router.post('/playlist/link/:id', function(request, response, next) {
     
 })
   
+// Delete a track (link) from a playlist
 router.delete('/playlist/link/:id', function(request, response, next) {
   
   Playlist.findByIdAndUpdate(

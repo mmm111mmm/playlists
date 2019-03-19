@@ -1,10 +1,9 @@
 const express = require('express')
-const { User } = require('./models.js')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+const { User } = require('./models.js')
 
 router.post("/auth/signup", function(request, response, next) {
-    console.log(request.body)
     const salt = bcrypt.genSaltSync(10);
     const encryptedPassword = bcrypt.hashSync(request.body.password, salt);
     var user = {
@@ -21,7 +20,6 @@ router.post("/auth/signup", function(request, response, next) {
 });
 
 router.post("/auth/login", function(request, response, next) {
-    console.log(request.body)
     User.findOne({username: request.body.username})
     .then(function(user) {
       if(user == null) {
