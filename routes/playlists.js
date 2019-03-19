@@ -106,4 +106,23 @@ router.delete('/playlist/link/:id', isLoggedIn, function(req, res, next) {
   
 })
 
+// Add all the links to the playlist (useful when reordering)
+// Ensures you're logged in and you own it.
+router.post('/playlist/links/:id', isLoggedIn, function(req, res, next) {
+  
+  Playlist.findOneAndUpdate({
+      "_id": mongoose.Types.ObjectId(req.params.id),
+      "_owner": mongoose.Types.ObjectId(req.session.user._id)
+    },
+    { links: req.body.links })
+  .then(function(foundOne) {
+    if(!foundOne) res.status(404).send()
+    else res.status(200).send()    
+  })
+  .catch(function(error) {
+    res.status(500).send(error)
+  }); 
+    
+})
+
 module.exports = router;
