@@ -4,7 +4,13 @@
   "description": "* Can make a named playlist",
   "main": "server.js",
   "dependencies": {
+    "bcrypt": "^3.0.5",
+    "connect-mongo": "^2.0.3",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "express-joi-validator": "^2.0.1",
+    "express-session": "^1.15.6",
+    "joi": "^14.3.1",
     "mongoose": "^5.4.19"
   },
   "devDependencies": {},
