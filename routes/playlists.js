@@ -51,6 +51,7 @@ router.post('/playlist/:name', isLoggedIn, function(req, res, next) {
 })
 
 // Delete the playlist
+// Ensures you're logged in and you own it.
 router.delete('/playlist/:id', isLoggedIn, function(req, res, next) {
   
   Playlist.findOneAndDelete({
@@ -68,6 +69,7 @@ router.delete('/playlist/:id', isLoggedIn, function(req, res, next) {
 })
   
 // Add a track (link) to playlist
+// Ensures you're logged in and you own it.
 router.post('/playlist/link/:id', isLoggedIn, function(req, res, next) {
   
   Playlist.findOneAndUpdate({
@@ -86,6 +88,7 @@ router.post('/playlist/link/:id', isLoggedIn, function(req, res, next) {
 })
   
 // Delete a track (link) from a playlist
+// Ensures you're logged in and you own it.
 router.delete('/playlist/link/:id', isLoggedIn, function(req, res, next) {
   
   Playlist.findOneAndUpdate({

@@ -8,11 +8,11 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 
 // TODO: 
-// limit all playlists
-// limit my playlists
 // reorder lists
 // add a comment on the link
 // -- later
+// limit all playlists
+// limit my playlists
 // 400 errors
 // next error
 // tests
