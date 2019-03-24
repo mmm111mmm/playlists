@@ -1,0 +1,141 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  pointer-events: none;
+}
+
+.App-header {
+  font-size: calc(10px + 2vmin);
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.container {
+  height: 100%;
+  background-color: var(--bg-color);
+}
+.containerLogin {
+  display: grid;
+  grid-template-columns: 20% auto 20%; 
+  grid-template-rows: repeat(15, 6.6%);
+  grid-template-areas: 
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". loginHeader ."
+      ". loginUsername ."
+      ". loginPassword ."
+      ". loginButton ."
+      ". loginError ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ;
+  grid-row-gap: 0px;
+  grid-column-gap: 0px;
+}
+.container * {
+  padding: 10px;
+}
+.login {
+  background-color: yellow; 
+}
+.loginTitle {
+  grid-area: loginHeader;
+  display: flex;
+  align-items: center;
+  background-color: var(--x-dark);
+  color: var(--x-light);
+}        
+.usernameInput {
+  grid-area: loginUsername;
+  background-color: var(--x-light);
+
+  border: 0px;
+  outline-width: 0;       
+}
+.passwordInput {
+  grid-area: loginPassword;
+  background-color: var(--x-light);
+  border-left: 0px;
+  border-top-width: 0.1px;
+  border-top-color: var(--x-light);
+  border-bottom-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  outline-width: 0;       
+}        
+.loginError {
+  padding: 0px;
+  grid-area: loginError;
+  margin-top: 8px; 
+}
+.loginError *:first-child {
+  padding-top: 8px;
+}
+.loginError * {
+  background-color: var(--dark);
+  color: var(--x-light);
+  text-indent: 10px;
+  padding: 0px;
+  padding-bottom: 8px;
+}
+.loginButton {
+  grid-area: loginButton;
+  background-color: var(--button-normal);
+  color: var(--x-dark);
+  border: 0px;
+  outline-width: 0;
+}
+.loginButton:hover {
+  background-color: var(--button-normal);
+  font-weight: bold;
+}
+.loginButton:active {
+  background-color: var(--button-normal);
+  font-size: 18px;
+}
+.containerWelcome {
+  display: grid;
+  grid-template-columns: 20% auto 20%; 
+  grid-template-rows: repeat(15, 6.6%);
+  grid-template-areas: 
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". welcome ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ". . ."
+      ;
+  grid-row-gap: 0px;
+  grid-column-gap: 0px;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome {
+  grid-area: welcome;
+}

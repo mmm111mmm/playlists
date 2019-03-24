@@ -10,20 +10,23 @@ const mongoStore = require('connect-mongo')(session);
 const bodyParser = require('body-parser')
 // How we store our data with Mongo
 const mongoose = require('mongoose')
+// Allow access from websites
+const cors = require('cors')
 
 // TODO: 
 // add a comment on the link
+// add logging.
 // -- later
 // limit all playlists
 // limit my playlists
-// tests
 // forget password option
-// don't show password in playslists with users
+// don't show password in playlists with users
 // -- error messages
 // 400 errors on size of string
+// 400 errors on size of number
 // custom error messages
-// --
-// (other project) Fix vuejs stuff on mobile
+// -- much later
+// tests
 
 // Give mongoose some defaults to stop node complaining...
 mongoose.set('useNewUrlParser', true);
@@ -40,6 +43,7 @@ app.use(session({
   resave: true,
   store: new mongoStore({ mongooseConnection: mongoose.connection })  
 }));
+app.use(cors())
 
 // Initialise the playlists and auth routes
 app.use('/', require('./routes/playlists.js'))

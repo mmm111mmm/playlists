@@ -11,6 +11,10 @@ function isLoggedIn(req, res, next) {
   else next(makeError(403, "Unauthorized"))
 }
 
+// Middleware that checks if the correct
+// body params are passed int o a route.
+// Gives the user a 400 error with the errors 
+// if the body parameters are missing or an empty string
 function requireParams(bodyParams) {
   return function(req, res, next) {
     var errors = []

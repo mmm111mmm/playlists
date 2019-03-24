@@ -41,7 +41,7 @@ router.post("/auth/login",
           request.session.user = user
           response.status(200).send(user)
         } else {
-          response.status(403).send()
+          response.status(404).send()
         }
       }
     })
