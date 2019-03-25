@@ -4,22 +4,27 @@ import { useTransition, animated } from 'react-spring'
 import { Route, Switch, __RouterContext } from 'react-router-dom'
 import './App.css'
 
+const service = axios.create({
+  baseURL: 'http://localhost:3000/',
+  withCredentials: true
+})
+
 const AppContext = React.createContext(null)
 
 let dispatch, state;
 const reducer = () => useReducer((state, [action, payload]) => {
-  console.log("action", action)
+  console.log("action", action, payload)
   switch(action) {
     case 'loginUsername': 
       return { ...state, loginUsername: payload}
     case 'loginPassword': 
       return { ...state, loginPassword: payload}
     case 'loginErrors': 
-      return { ...state, loginErrors: payload }
+      return { ...state, loginErrors: payload ? payload : [{ message: "Error... " }] }
     case 'loginSuccess': 
       return { ...state, loginErrors: [], user: payload, location: "/welcome"}
     case 'login': 
-      axios.post('http://localhost:3000/auth/login', {
+      service.post('/auth/login', {
         username: state.loginUsername,
         password: state.loginPassword
       })
@@ -29,16 +34,32 @@ const reducer = () => useReducer((state, [action, payload]) => {
       )
       return { ...state, location: "/" }
     case 'playlistsFetch': 
-      axios.get('http://localhost:3000/playlist')
+      service.get('/playlist')
       .then(({ data }) => dispatch(["playlists", data]))
       .catch(({ response }) => dispatch([ "playlistsErrors", 
         response ? response.data : [{ message: "Error... " }] ])
       )
       return state 
-    case 'playlists': 
-      return { ...state, playlists: payload };
     case 'playlistsErrors': 
       return state;
+    case 'playlists': 
+      return { ...state, playlists: payload };
+    case 'playlistName': 
+      return { ...state, playlistName: payload}
+    case 'playlistAdd': 
+      service.post(`/playlist/${state.playlistName}`)
+      .then(({ data }) => dispatch(["playlistsFetch"]))
+      .catch(({ response }) => dispatch([ "playlistsErrors", 
+        response ? response.data : [{ message: "Error... " }] ])
+      )
+      return { ...state, playlistName: "" } 
+    case 'playlistDelete': 
+      service.delete(`/playlist/${payload}`)
+      .then(() => dispatch(["playlistsFetch"]))
+      .catch(({ response }) => dispatch([ "playlistsErrors", 
+        response ? response.data : [{ message: "Error... " }] ])
+      )
+      return state 
     default: 
       throw new Error(`bad action: ${action}`)
   }
@@ -48,6 +69,7 @@ const reducer = () => useReducer((state, [action, payload]) => {
   loginErrors: [],
   user: {},
   playlists: [],
+  playlistName: "",
   location: window.location.pathname,
 })
 
@@ -110,15 +132,34 @@ function Welcome() {
     dispatch(["playlistsFetch"])
   }, [])
   return (
-    <div className="container containerWelcome">
-      <div className="welcome">
-        Welcome, {state.user.username}
-        <div>
-          {state.playlists.map((pl, i) =>
-            <div key={i}>{pl.name}</div>  
-          )}
-        </div>
+    <div className="container welcome" style={{ padding: "40px" }}>
+      Welcome, {state.user.username}
+      <div style={{ backgroundColor: "var(--x-light)"}}>
+        {state.playlists.map((pl, i) =>
+          <div key={i}>
+            <div>{pl.name}</div>  
+            <button
+              onClick={() => dispatch(["playlistDelete", pl._id])}
+              >delete</button>
+          </div>
+        )}
       </div>
+      <AddPlaylist />
+    </div>
+  )
+}
+
+function AddPlaylist() {
+  const { state, dispatch } = useContext(AppContext)
+  return (
+    <div>
+      <input placeholder="playlist name" 
+        value={state.playlistName}
+        onChange={(e) => dispatch(["playlistName", e.target.value])}
+      />
+      <button
+        onClick={() => dispatch(["playlistAdd"])}
+      >add playlist</button>
     </div>
   )
 }
@@ -126,4 +167,12 @@ function Welcome() {
 export default Home;
 
 // TODO
-// Thing
+// api.js file
+// Fetch user info in welcome screen
+// Seperate screen for playlists and my playlists
+// List tracks in playlist
+// Add tracks in playlist
+// Delete tracks in playlist
+// Loading indicator
+// Different transitions for different components
+// login not found error

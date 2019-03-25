@@ -43,7 +43,14 @@ app.use(session({
   resave: true,
   store: new mongoStore({ mongooseConnection: mongoose.connection })  
 }));
-app.use(cors())
+app.use(cors({
+  origin: (origin, cb) => {
+    cb(null, origin && origin.startsWith('http://localhost:'))
+  },
+  optionsSuccessStatus: 200,
+  credentials: true
+}))
+app.use(express.static(process.cwd() + '/public'));
 
 // Initialise the playlists and auth routes
 app.use('/', require('./routes/playlists.js'))

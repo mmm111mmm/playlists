@@ -110,6 +110,7 @@
   font-size: 18px;
 }
 .containerWelcome {
+  padding: 0px;
   display: grid;
   grid-template-columns: 20% auto 20%; 
   grid-template-rows: repeat(15, 6.6%);
@@ -138,4 +139,9 @@
 
 .welcome {
   grid-area: welcome;
+  padding: 0px;
+}
+
+.welcome * {
+  padding: 0px;
 }
