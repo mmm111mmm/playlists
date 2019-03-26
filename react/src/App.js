@@ -1,6 +1,7 @@
-import React, { useReducer, useEffect, useContext } from 'react'
+import React, { useReducer, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 import { useTransition, animated } from 'react-spring'
+import colorsys from 'colorsys'
 import { Route, Switch, __RouterContext } from 'react-router-dom'
 import './App.css'
 
@@ -15,61 +16,10 @@ let dispatch, state;
 const reducer = () => useReducer((state, [action, payload]) => {
   console.log("action", action, payload)
   switch(action) {
-    case 'loginUsername': 
-      return { ...state, loginUsername: payload}
-    case 'loginPassword': 
-      return { ...state, loginPassword: payload}
-    case 'loginErrors': 
-      return { ...state, loginErrors: payload ? payload : [{ message: "Error... " }] }
-    case 'loginSuccess': 
-      return { ...state, loginErrors: [], user: payload, location: "/welcome"}
-    case 'login': 
-      service.post('/auth/login', {
-        username: state.loginUsername,
-        password: state.loginPassword
-      })
-      .then(response => dispatch(["loginSuccess", response.data]))
-      .catch(({ response }) => dispatch([ "loginErrors", 
-        response ? response.data : [{ message: "Error... " }] ])
-      )
-      return { ...state, location: "/" }
-    case 'playlistsFetch': 
-      service.get('/playlist')
-      .then(({ data }) => dispatch(["playlists", data]))
-      .catch(({ response }) => dispatch([ "playlistsErrors", 
-        response ? response.data : [{ message: "Error... " }] ])
-      )
-      return state 
-    case 'playlistsErrors': 
-      return state;
-    case 'playlists': 
-      return { ...state, playlists: payload };
-    case 'playlistName': 
-      return { ...state, playlistName: payload}
-    case 'playlistAdd': 
-      service.post(`/playlist/${state.playlistName}`)
-      .then(({ data }) => dispatch(["playlistsFetch"]))
-      .catch(({ response }) => dispatch([ "playlistsErrors", 
-        response ? response.data : [{ message: "Error... " }] ])
-      )
-      return { ...state, playlistName: "" } 
-    case 'playlistDelete': 
-      service.delete(`/playlist/${payload}`)
-      .then(() => dispatch(["playlistsFetch"]))
-      .catch(({ response }) => dispatch([ "playlistsErrors", 
-        response ? response.data : [{ message: "Error... " }] ])
-      )
-      return state 
     default: 
       throw new Error(`bad action: ${action}`)
   }
 }, {
-  loginUsername: "aaron",
-  loginPassword: "aaron",
-  loginErrors: [],
-  user: {},
-  playlists: [],
-  playlistName: "",
   location: window.location.pathname,
 })
 
@@ -92,8 +42,7 @@ function Home() {
           style={{...props, position: "absolute", height: "100%", width: "100%"}} 
           key={key}>
           <Switch location={item}>
-            <Route exact path="/" component={Login} />
-            <Route exact path="/welcome" component={Welcome} />
+            <Route exact path="/" component={Colour} />
           </Switch>
         </animated.div>
       ))}
@@ -101,66 +50,65 @@ function Home() {
   )
 }
 
-function Login() {
-  const { state, dispatch } = useContext(AppContext)
-  return (
-    <div className="container containerLogin">
-      <div className="loginTitle">Create your playlists</div>
-      <input className="usernameInput" placeholder="username" required
-        value={ state.loginUsername } 
-        onChange={e => dispatch(["loginUsername", e.target.value]) } />
-      <input className="passwordInput" placeholder="password" required
-        value={ state.loginPassword } 
-        onChange={e => dispatch(["loginPassword", e.target.value]) } />      
-      <button className="loginButton" 
-        onClick={() => dispatch(["login"])}>
-        Login
-      </button>
-      <div className="loginError">
-        { state.loginErrors.map((e, i) =>
-            <div key={i}>{e.message}</div>
-          ) 
-        }
-      </div>
-    </div>    
-  )
-}  
-
-function Welcome() {
-  const { state, dispatch } = useContext(AppContext)
-  useEffect(() => {
-    dispatch(["playlistsFetch"])
-  }, [])
-  return (
-    <div className="container welcome" style={{ padding: "40px" }}>
-      Welcome, {state.user.username}
-      <div style={{ backgroundColor: "var(--x-light)"}}>
-        {state.playlists.map((pl, i) =>
-          <div key={i}>
-            <div>{pl.name}</div>  
-            <button
-              onClick={() => dispatch(["playlistDelete", pl._id])}
-              >delete</button>
-          </div>
-        )}
-      </div>
-      <AddPlaylist />
-    </div>
-  )
+function hsvToRgb(h, s, v) {
+  var r, g, b;
+  var i = Math.floor(h * 6);
+  var f = h * 6 - i;
+  var p = v * (1 - s);
+  var q = v * (1 - f * s);
+  var t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+  }
+  return [ r * 255, g * 255, b * 255 ];
 }
 
-function AddPlaylist() {
+function rgb2hex(red, green, blue) {
+  var rgb = blue | (green << 8) | (red << 16);
+  return '#' + (0x1000000 + rgb).toString(16).slice(1)
+}
+
+function Colour() {
+  const [hue, setHue] = useState(244)
+  const [sat, setSat] = useState(2)
+  const [bright, setBright] = useState(98)
+  const [rgb, setRGB] = useState([0, 0, 0])
   const { state, dispatch } = useContext(AppContext)
+  useEffect(() => {
+    var [r, g, b ] = hsvToRgb(hue/360, sat/100, bright/100)
+    setRGB([ Math.round(r),Math.round(g), Math.round(b) ])
+  }, [hue, sat, bright])
+
   return (
-    <div>
-      <input placeholder="playlist name" 
-        value={state.playlistName}
-        onChange={(e) => dispatch(["playlistName", e.target.value])}
-      />
-      <button
-        onClick={() => dispatch(["playlistAdd"])}
-      >add playlist</button>
-    </div>
+    <div style={{ backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`}}>
+      <div>
+        <div>Hue {hue}</div>
+        <input type="range" min="0" max="360" value={hue}
+          onChange={(e) => setHue(parseInt(e.target.value))} 
+          />
+      </div>
+      <div>
+        <div>Saturation {sat}</div>
+        <input type="range" min="0" max="100" value={sat} 
+          onChange={(e) => setSat(parseInt(e.target.value))} 
+          />
+      </div>
+      <div>
+        <div>Brightness {bright}</div>
+        <input type="range" min="0" max="100" value={bright} 
+          onChange={(e) => setBright(parseInt(e.target.value))} 
+          />
+      </div>
+      <div>
+        <div>{`rgb(${rgb[0]},${rgb[1]},${rgb[2]})`}</div>
+        <div>{rgb2hex(rgb[0], rgb[1], rgb[2])}</div>
+      </div>
+    </div> 
   )
 }
 
